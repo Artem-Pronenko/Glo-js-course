@@ -1,10 +1,20 @@
-let money = 7000,
+const isNumber = n => !isNaN(parseFloat(n)) && isFinite(n)
+
+let money,
   income = 'Web-start',
   addExpenses = ' Лицензия на WebStorm , Микрофон, Интернет ',
   deposit = false,
   mission = 10000,
   period = 3
 
+const start = () => {
+  do {
+    money = prompt('Ваш месячный доход?')
+  }
+  while (!isNumber(money))
+
+}
+start()
 
 const showTypeOf = data => console.log(data, typeof (data))
 
@@ -13,27 +23,39 @@ showTypeOf(income)
 showTypeOf(deposit)
 
 
-money = +prompt('Ваш месячный доход?', '7000')
 addExpenses = prompt('Перечислите возможные расходы за рассчитываемый период через запятую', ' Лицензия на WebStorm , Микрофон, Интернет ')
 deposit = confirm('Есть ли у вас депозит в банке?')
 
-expenses1 = prompt('Введите обязательную статью расходов?', 'Интернет')
-amount1 = +prompt('Во сколько это обойдется?', '500')
+let expenses = []
+const getExpensesMonth = () => {
+  let sum = 0
+  let countSum = 0
+  for (let i = 0; i < 2; i++) {
+    expenses[i] = prompt('Введите обязательную статью расходов?', 'Интернет')
+    do {
+      countSum = prompt('Во сколько это обойдется?', '500')
+    } while (!isNumber(countSum))
+    sum += +countSum
+  }
 
-expenses2 = prompt('Введите обязательную статью расходов?', 'Интернет2')
-amount2 = +prompt('Во сколько это обойдется?', '500')
+  return sum
+}
 
+let expensesAmount = getExpensesMonth()
 
-const getExpensesMonth = () => amount1 + amount2
-console.log('Расходы за месяц:', getExpensesMonth())
+console.log('Расходы за месяц:', expensesAmount)
 
-const getAccumulatedMonth = () => money - getExpensesMonth()
+const getAccumulatedMonth = () => money - expensesAmount
 console.log('Бюджет на месяц:', getAccumulatedMonth())
 
 const accumulatedMonth = getAccumulatedMonth()
 
 const getTargetMonth = () => Math.ceil(mission / accumulatedMonth)
-console.log(`Цель будет достигнута за: ${getTargetMonth()} месяцев`)
+
+getTargetMonth() <= 0
+  ? console.log('цель не будет достигнута')
+  : console.log(`Цель будет достигнута за: ${getTargetMonth()} месяцев`)
+
 
 const budgetDay = () => Math.floor(accumulatedMonth / 30)
 console.log('Бюджет на день:', budgetDay())
