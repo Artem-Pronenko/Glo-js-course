@@ -1,12 +1,6 @@
 const isNumber = n => !isNaN(parseFloat(n)) && isFinite(n)
 
-let money,
-  income = 'Web-start',
-  addExpenses = ' Лицензия на WebStorm , Микрофон, Интернет ',
-  deposit = false,
-  mission = 10000,
-  period = 3
-
+let money = null
 const start = () => {
   do {
     money = prompt('Ваш месячный доход?')
@@ -16,62 +10,81 @@ const start = () => {
 }
 start()
 
-const showTypeOf = data => console.log(data, typeof (data))
+const appData = {
+  budget: money,
+  budgetDay: 0,
+  budgetMonth: 0,
+  expensesMonth: 0,
+  income: {},
+  addIncome: [],
+  expenses: {},
+  addExpenses: [],
+  deposit: false,
+  mission: 10000,
+  period: 3,
 
-showTypeOf(money)
-showTypeOf(income)
-showTypeOf(deposit)
+  asking() {
+    const addExpenses = prompt('Перечислите возможные расходы за рассчитываемый период через запятую', ' Лицензия на' +
+      ' WebStorm , Микрофон, Интернет ')
+    this.addExpenses = addExpenses.toLowerCase().trim().split(' , ')
+    this.deposit = confirm('Есть ли у вас депозит в банке?')
 
+    let sum, costItem
+    for (let i = 0; i < 2; i++) {
+      costItem = prompt('Введите обязательную статью расходов?', 'Интернет')
+      do {
+        sum = prompt('Во сколько это обойдется?', '500')
+      } while (!isNumber(sum))
+      this.expenses[costItem] = +sum
+    }
+  },
 
-addExpenses = prompt('Перечислите возможные расходы за рассчитываемый период через запятую', ' Лицензия на WebStorm , Микрофон, Интернет ')
-deposit = confirm('Есть ли у вас депозит в банке?')
+  getExpensesMonth() {
+    for (const key in this.expenses) {
+      this.expensesMonth += +this.expenses[key]
+    }
+  },
 
-let expenses = []
-const getExpensesMonth = () => {
-  let sum = 0
-  let countSum = 0
-  for (let i = 0; i < 2; i++) {
-    expenses[i] = prompt('Введите обязательную статью расходов?', 'Интернет')
-    do {
-      countSum = prompt('Во сколько это обойдется?', '500')
-    } while (!isNumber(countSum))
-    sum += +countSum
+  getBudget() {
+    this.budgetMonth = this.budget - this.expensesMonth
+    this.budgetDay = Math.floor(this.budgetMonth / 30)
+  },
+
+  getTargetMonth() {
+    return Math.ceil(this.mission / this.budgetMonth)
+  },
+
+  getStatusIncome() {
+    const budget = this.budgetDay
+    if (!budget || budget < 0) {
+      return 'Что-то пошло не так';
+    } else if (budget >= 1200) {
+      return 'У вас высокий уровень дохода';
+    } else if (budget >= 600 && budget < 1200) {
+      return 'У вас средний уровень дохода';
+    } else {
+      return 'К сожалению у вас уровень дохода ниже среднего';
+    }
   }
 
-  return sum
 }
 
-let expensesAmount = getExpensesMonth()
+appData.asking()
+appData.getExpensesMonth()
+appData.getBudget()
+console.log('сумма всех обязательных расходов за месяц', appData.expensesMonth)
+console.log('Накопления за месяц:', appData.budgetMonth)
+console.log('Бюджет на день:', appData.budgetDay)
 
-console.log('Расходы за месяц:', expensesAmount)
-
-const getAccumulatedMonth = () => money - expensesAmount
-console.log('Бюджет на месяц:', getAccumulatedMonth())
-
-const accumulatedMonth = getAccumulatedMonth()
-
-const getTargetMonth = () => Math.ceil(mission / accumulatedMonth)
-
-getTargetMonth() <= 0
-  ? console.log('цель не будет достигнута')
-  : console.log(`Цель будет достигнута за: ${getTargetMonth()} месяцев`)
-
-
-const budgetDay = () => Math.floor(accumulatedMonth / 30)
-console.log('Бюджет на день:', budgetDay())
-
-console.log(addExpenses.toLowerCase().trim().split(' , '))
-
-const getStatusIncome = () => {
-  const budget = budgetDay()
-  if (!budget || budget < 0) {
-    return 'Что-то пошло не так';
-  } else if (budget >= 1200) {
-    return 'У вас высокий уровень дохода';
-  } else if (budget >= 600 && budget < 1200) {
-    return 'У вас средний уровень дохода';
-  } else {
-    return 'К сожалению у вас уровень дохода ниже среднего';
-  }
+const targetMonth = appData.getTargetMonth();
+if (targetMonth <= 0) {
+  console.log('Цель не будет достигнута');
+} else {
+  console.log(`Цель будт достигнута за ${targetMonth} месяца`);
 }
-console.log(getStatusIncome())
+console.log(appData.getStatusIncome())
+
+for (const key in appData) {
+  console.log(`Наша программа включает в себя данные: ${key} ${appData[key]}`);
+
+}
