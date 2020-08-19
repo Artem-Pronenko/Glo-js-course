@@ -20,22 +20,54 @@ const appData = {
   expenses: {},
   addExpenses: [],
   deposit: false,
+  percentDeposit: 0,
+  moneyDeposit: 0,
   mission: 10000,
   period: 3,
 
   asking() {
-    const addExpenses = prompt('Перечислите возможные расходы за рассчитываемый период через запятую', ' Лицензия на' +
-      ' WebStorm , Микрофон, Интернет ')
-    this.addExpenses = addExpenses.toLowerCase().trim().split(' , ')
-    this.deposit = confirm('Есть ли у вас депозит в банке?')
 
-    let sum, costItem
-    for (let i = 0; i < 2; i++) {
-      costItem = prompt('Введите обязательную статью расходов?', 'Интернет')
+    if (confirm('У вас есть доп. заработок?')) {
+      let itemIncome, cashIncome
       do {
-        sum = prompt('Во сколько это обойдется?', '500')
-      } while (!isNumber(sum))
-      this.expenses[costItem] = +sum
+        itemIncome = prompt('Какой у вас доп. заработок?', 'детдом').trim()
+      }
+      while (itemIncome === '' || isNumber(itemIncome))
+      do {
+        cashIncome = prompt('Сколько в месяц зарабатываете?', '1000').trim()
+      }
+      while (!isNumber(cashIncome))
+      this.income[itemIncome] = +cashIncome
+    }
+
+    let addExpenses = ''
+    do {
+      addExpenses =
+        prompt('Перечислите возможные расходы за рассчитываемый период через запятую', 'интернет, такси,' +
+          ' коммунальные расходы')
+          .trim()
+    }
+    while (addExpenses === '' || isNumber(addExpenses))
+    appData.addExpenses = addExpenses.toLowerCase().split(',')
+
+    // вывод массива с большой буквы
+    let expenses = appData.addExpenses.map(el => el.trim()[0].toUpperCase() + el.trim().substring(1))
+    console.log(expenses)
+
+
+    appData.deposit = confirm('Есть ли у вас депозит в банке?')
+    let sum = 0, newSum = 0
+    for (let i = 0; i < 2; i++) {
+      do {
+        newSum = prompt('Введите обязательную статью расходов?', 'садик, чай').trim()
+      }
+      while (newSum === '' || isNumber(newSum))
+
+      do {
+        sum = prompt('Во сколько это обойдется?', '2000')
+      }
+      while (!isNumber(sum))
+      appData.expenses[newSum] = +sum
     }
   },
 
@@ -65,7 +97,27 @@ const appData = {
     } else {
       return 'К сожалению у вас уровень дохода ниже среднего';
     }
-  }
+  },
+
+  getInfoDeposit() {
+    if (this.deposit) {
+      do {
+        this.percentDeposit = prompt('Какой годовой процент?', '10').trim()
+      }
+      while (!isNumber(this.percentDeposit))
+      this.percentDeposit = +this.percentDeposit
+      do {
+        this.moneyDeposit = prompt('Какая сумма заложена?', '1000').trim()
+      }
+      while (!isNumber(this.moneyDeposit))
+      this.moneyDeposit = +this.moneyDeposit
+    }
+  },
+
+  calcSavedMoney() {
+    return this.budgetMonth * this.period
+  },
+
 
 }
 
@@ -76,15 +128,17 @@ console.log('сумма всех обязательных расходов за 
 console.log('Накопления за месяц:', appData.budgetMonth)
 console.log('Бюджет на день:', appData.budgetDay)
 
-const targetMonth = appData.getTargetMonth();
+const targetMonth = appData.getTargetMonth()
 if (targetMonth <= 0) {
-  console.log('Цель не будет достигнута');
+  console.log('Цель не будет достигнута')
 } else {
-  console.log(`Цель будт достигнута за ${targetMonth} месяца`);
+  console.log(`Цель будт достигнута за ${targetMonth} месяца`)
 }
 console.log(appData.getStatusIncome())
 
 for (const key in appData) {
-  console.log(`Наша программа включает в себя данные: ${key} ${appData[key]}`);
+  console.log(`Наша программа включает в себя данные: ${key} ${appData[key]}`)
 
 }
+appData.getInfoDeposit()
+console.log(appData.percentDeposit + '%', appData.moneyDeposit, appData.calcSavedMoney())
