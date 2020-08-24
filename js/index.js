@@ -1,14 +1,35 @@
-const isNumber = n => !isNaN(parseFloat(n)) && isFinite(n)
+const isNumber = n => !isNaN(parseFloat(n)) && isFinite(n),
+  start = document.getElementById('start'),
+  btnPlus = document.getElementsByTagName('button'),
+  incomePlus = btnPlus[0],
+  expensesPlus = btnPlus[1],
+  depositCheck = document.querySelector('#deposit-check'),
+  additionalIncomeItem = document.querySelectorAll('.additional_income-item'),
+  budgetMonthValue = document.querySelector('.budget_month-value'),
+  budgetDayValue = document.querySelector('.budget_day-value'),
+  expensesMonthValue = document.querySelector('.expenses_month-value'),
+  additionalIncomeValue = document.querySelector('.additional_income-value'),
+  additionalExpensesValue = document.querySelector('.additional_expenses-value'),
+  incomePeriodValue = document.querySelector('.income_period-value'),
+  targetMonthValue = document.querySelector('.target_month-value'),
+  salaryAmount = document.querySelector('.salary-amount'),
+  incomeTitle = document.querySelector('.income-title'),
+  incomeAmount = document.querySelector('.income-amount'),
+  expensesTitle = document.querySelector('.expenses-title'),
+  expensesAmount = document.querySelector('.expenses-amount'),
+  additionalExpenses = document.querySelector('.additional_expenses-item'),
+  periodSelect = document.querySelector('.period-select'),
+  targetAmount = document.querySelector('.target-amount');
 
 let money = null
-const start = () => {
+const _start = () => {
   do {
     money = prompt('Ваш месячный доход?')
   }
   while (!isNumber(money))
 
 }
-start()
+_start()
 
 const appData = {
   budget: money,
