@@ -21,7 +21,7 @@ book[4].children[0].children[0].textContent = 'Книга 3. this и Прото�
 book2Ul.insertBefore(book2Li[2], book2Li[9])
 book2Ul.insertBefore(book2Li[5], book2Li[3])
 book2Ul.insertBefore(book2Li[7], book2Li[4])
-book2Ul.insertBefore(book2Li[9], book2Li[1])
+book2Ul.insertBefore(book2Li[9], book2Li[8])
 
 book5Ul.insertBefore(book5Li[9], book5Li[2])
 book5Ul.insertBefore(book5Li[4], book5Li[3])
