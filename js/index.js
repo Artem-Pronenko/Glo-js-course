@@ -1,5 +1,6 @@
 const isNumber = n => !isNaN(parseFloat(n)) && isFinite(n),
   start = document.getElementById('start'),
+  btnCancel = document.getElementById('cancel'),
   btnPlus = document.getElementsByTagName('button'),
   incomePlus = btnPlus[0],
   expensesPlus = btnPlus[1],
@@ -17,7 +18,9 @@ const isNumber = n => !isNaN(parseFloat(n)) && isFinite(n),
   expensesTitle = document.querySelector('.expenses-title'),
   additionalExpenses = document.querySelector('.additional_expenses-item'),
   periodSelect = document.querySelector('.period-select'),
-  targetAmount = document.querySelector('.target-amount')
+  targetAmount = document.querySelector('.target-amount'),
+  dataBlockInput = document.querySelector('.data'),
+  outPeriod = periodSelect.parentNode.children[2]
 
 let expensesItems = document.querySelectorAll('.expenses-items'),
   incomeItems = document.querySelectorAll('.income-items')
@@ -37,7 +40,10 @@ const appData = {
   moneyDeposit: 0,
 
   start() {
-
+    //Блокировка инпутов
+    dataBlockInput.querySelectorAll('[type="text"]').forEach(item => item.disabled = true)
+    start.style.display = 'none'
+    btnCancel.style.display = 'block'
     this.budget = +salaryAmount.value
     this.getExpenses()
     this.getIncome()
@@ -118,12 +124,12 @@ const appData = {
         cashIncome = item.querySelector('.income-amount').value
 
       if (itemIncome !== '' && cashIncome !== '') {
-        appData.income[itemIncome] = +cashIncome
+        this.income[itemIncome] = +cashIncome
       }
     })
 
-    for (let key in appData.income) {
-      appData.incomeMonth += +appData.income[key]
+    for (let key in this.income) {
+      this.incomeMonth += +this.income[key]
     }
 
   },
@@ -163,34 +169,6 @@ const appData = {
     return Math.ceil(targetAmount.value / this.budgetMonth)
   },
 
-  // getStatusIncome() {
-  //   const budget = this.budgetDay
-  //   if (!budget || budget < 0) {
-  //     return 'Что-то пошло не так'
-  //   } else if (budget >= 1200) {
-  //     return 'У вас высокий уровень дохода'
-  //   } else if (budget >= 600 && budget < 1200) {
-  //     return 'У вас средний уровень дохода'
-  //   } else {
-  //     return 'К сожалению у вас уровень дохода ниже среднего'
-  //   }
-  // },
-
-  // getInfoDeposit() {
-  //   if (this.deposit) {
-  //     do {
-  //       this.percentDeposit = prompt('Какой годовой процент?', '10').trim()
-  //     }
-  //     while (!isNumber(this.percentDeposit))
-  //     this.percentDeposit = +this.percentDeposit
-  //     do {
-  //       this.moneyDeposit = prompt('Какая сумма заложена?', '1000').trim()
-  //     }
-  //     while (!isNumber(this.moneyDeposit))
-  //     this.moneyDeposit = +this.moneyDeposit
-  //   }
-  // },
-
   calcPeriod() {
     return this.budgetMonth * periodSelect.value
   },
@@ -212,9 +190,53 @@ const appData = {
         target.value = target.value.replace(/[^0-9]/i, '')
       }
     })
+  },
+
+  deleteBtnPlus(item) {
+    if (item.length > 1) {
+      for (let i = item.length; i-- - 1;) {
+        item[i].remove()
+      }
+    }
+  },
+
+  reset() {
+    btnCancel.style.display = 'none'
+    start.style.display = 'block'
+    expensesPlus.style.display = 'block'
+    incomePlus.style.display = 'block'
+
+    this.deleteBtnPlus(expensesItems)
+    this.deleteBtnPlus(incomeItems)
+
+
+    // Очистка инпутов
+    document.querySelectorAll('[type="text"]').forEach(item => item.value = '')
+    dataBlockInput
+      .querySelectorAll('[type="text"]')
+      .forEach(item => item.disabled = false)
+    // Период расчета сброс
+    outPeriod.textContent = '1'
+    periodSelect.value = 1
+    // Сброс данных объекта
+    this.income = {}
+    this.incomeMonth = 0
+    this.addIncome = []
+    this.expenses = {}
+    this.addExpenses = []
+    this.deposit = false
+    this.percentDeposit = 0
+    this.moneyDeposit = 0
+    this.budget = 0
+    this.budgetDay = 0
+    this.budgetMonth = 0
+    this.expensesMonth = 0
+    this.validStart()
+
   }
 
 }
+
 appData.validateInput()
 appData.validStart()
 start.addEventListener('click', appData.start.bind(appData))
@@ -223,3 +245,4 @@ expensesPlus.addEventListener('click', appData.addExpensesBlock.bind(appData))
 incomePlus.addEventListener('click', appData.addIncomeBlock.bind(appData))
 periodSelect.addEventListener('input', appData.showPeriod)
 salaryAmount.addEventListener('input', appData.validStart)
+btnCancel.addEventListener('click', appData.reset.bind(appData))
