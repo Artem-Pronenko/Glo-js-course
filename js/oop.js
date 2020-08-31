@@ -54,6 +54,7 @@ class AppData {
     this.getExpensesMonth()
     this.getAddExpenses()
     this.getAddIncome()
+    this.getInfoDeposit()
     this.getBudget()
 
     this.showResult()
@@ -149,7 +150,8 @@ class AppData {
   }
 
   getBudget() {
-    this.budgetMonth = this.budget + this.incomeMonth - this.expensesMonth
+    const monthDeposit = this.moneyDeposit * (this.percentDeposit / 100)
+    this.budgetMonth = this.budget + this.incomeMonth - this.expensesMonth + monthDeposit
     this.budgetDay = Math.floor(this.budgetMonth / 30)
   }
 
@@ -226,8 +228,37 @@ class AppData {
     this.validStart()
   }
 
-  changePercent() {
+  // валидация поля с %
+  percentValid() {
+    if (depositCheck.checked) {
+      start.disabled = depositPercent.value === ''
+      console.log(+depositPercent.value.trim() > 0)
+      if (depositPercent.value.trim() === '' || +depositPercent.value <= 0) {
+        start.disabled = true
+      }
+    }
 
+  }
+
+  changePercent(depositBank) {
+    const selectValue = depositBank.value
+
+    if (selectValue === 'other') {
+      depositPercent.value = '';
+      depositPercent.style.display = 'inline-block';
+      this.percentValid()
+    } else {
+      depositPercent.value = selectValue;
+      depositPercent.style.display = '';
+      this.percentValid()
+    }
+  }
+
+  getInfoDeposit() {
+    if (this.deposit) {
+      this.percentDeposit = depositPercent.value;
+      this.moneyDeposit = depositAmount.value;
+    }
   }
 
   depositHandler() {
@@ -235,13 +266,15 @@ class AppData {
       depositBank.style.display = 'inline-block'
       depositAmount.style.display = 'inline-block'
       this.deposit = true
-      depositBank.addEventListener('change', this.changePercent)
+      depositBank.addEventListener('change', this.changePercent.bind(this, depositBank))
     } else {
       depositBank.style.display = ''
       depositAmount.style.display = ''
       depositPercent.style.display = ''
       depositBank.value = ''
       depositAmount.value = ''
+      this.deposit = false
+      depositBank.removeEventListener('change', this.changePercent.bind(this))
     }
   }
 
@@ -253,6 +286,7 @@ class AppData {
     salaryAmount.addEventListener('input', this.validStart)
     btnCancel.addEventListener('click', this.reset.bind(this))
     depositCheck.addEventListener('change', this.depositHandler.bind(this))
+    depositPercent.addEventListener('input', this.percentValid)
   }
 
 }
