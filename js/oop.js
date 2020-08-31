@@ -5,6 +5,9 @@ const isNumber = n => !isNaN(parseFloat(n)) && isFinite(n),
   incomePlus = btnPlus[0],
   expensesPlus = btnPlus[1],
   depositCheck = document.querySelector('#deposit-check'),
+  depositBank = document.querySelector('.deposit-bank'),
+  depositAmount = document.querySelector('.deposit-amount'),
+  depositPercent = document.querySelector('.deposit-percent'),
   additionalIncomeItem = document.querySelectorAll('.additional_income-item'),
   budgetMonthValue = document.querySelector('.budget_month-value'),
   budgetDayValue = document.getElementsByClassName('budget_day-value')[0],
@@ -223,6 +226,25 @@ class AppData {
     this.validStart()
   }
 
+  changePercent() {
+
+  }
+
+  depositHandler() {
+    if (depositCheck.checked) {
+      depositBank.style.display = 'inline-block'
+      depositAmount.style.display = 'inline-block'
+      this.deposit = true
+      depositBank.addEventListener('change', this.changePercent)
+    } else {
+      depositBank.style.display = ''
+      depositAmount.style.display = ''
+      depositPercent.style.display = ''
+      depositBank.value = ''
+      depositAmount.value = ''
+    }
+  }
+
   eventsListeners() {
     start.addEventListener('click', this.start.bind(this))
     expensesPlus.addEventListener('click', this.addExpIncBlock.bind(this, expensesItems, expensesPlus))
@@ -230,6 +252,7 @@ class AppData {
     periodSelect.addEventListener('input', this.showPeriod)
     salaryAmount.addEventListener('input', this.validStart)
     btnCancel.addEventListener('click', this.reset.bind(this))
+    depositCheck.addEventListener('change', this.depositHandler.bind(this))
   }
 
 }
