@@ -47,8 +47,7 @@ class AppData {
     start.style.display = 'none'
     btnCancel.style.display = 'block'
     this.budget = +salaryAmount.value
-    this.getExpenses()
-    this.getIncome()
+    this.getExpInc()
     this.getExpensesMonth()
     this.getAddExpenses()
     this.getAddIncome()
@@ -70,25 +69,14 @@ class AppData {
     $el.children[1].value = ''
   }
 
-  // Добавление полей "Дополнительный доход"
-  addIncomeBlock() {
-    let cloneIncomeItems = incomeItems[0].cloneNode(true)
-    this.addInputClear(cloneIncomeItems)
-    incomeItems[0].parentNode.insertBefore(cloneIncomeItems, incomePlus)
-    incomeItems = document.querySelectorAll('.income-items')
-    if (incomeItems.length === 3) {
-      incomePlus.style.display = 'none'
-    }
-  }
-
-  // Добавление полей "Обязательные расходы"
-  addExpensesBlock() {
-    const cloneExpensesItems = expensesItems[0].cloneNode(true)
+  // Добавление полей "Обязательные расходы" и "Дополнительный доход"
+  addExpIncBlock(items, button) {
+    const cloneExpensesItems = items[0].cloneNode(true)
     this.addInputClear(cloneExpensesItems)
-    expensesItems[0].parentNode.insertBefore(cloneExpensesItems, expensesPlus)
-    expensesItems = document.querySelectorAll('.expenses-items')
-    if (expensesItems.length === 3) {
-      expensesPlus.style.display = 'none'
+    items[0].parentNode.insertBefore(cloneExpensesItems, button)
+    items = document.querySelectorAll(`.${items[0].classList}`)
+    if (items.length === 3) {
+      items[0].parentElement.querySelector('.btn_plus').style.display = 'none'
     }
   }
 
@@ -108,26 +96,25 @@ class AppData {
   }
 
   //Обязательные расходы
-  getExpenses() {
-    expensesItems.forEach(item => {
-      const itemExpenses = item.querySelector('.expenses-title').value,
-        cashExpenses = item.querySelector('.expenses-amount').value
-      if (itemExpenses !== '' && cashExpenses !== '') {
-        this.expenses[itemExpenses] = +cashExpenses
-      }
-    })
-  }
-
   // Дополнительный доход
-  getIncome() {
-    incomeItems.forEach(item => {
-      const itemIncome = item.querySelector('.income-title').value,
-        cashIncome = item.querySelector('.income-amount').value
-      if (itemIncome !== '' && cashIncome !== '') {
-        this.income[itemIncome] = +cashIncome
+  getExpInc() {
+    const count = item => {
+      const startStr = item.className.split('-')[0],
+        itemTitle = item.querySelector(`.${startStr}-title`).value,
+        itemAmount = item.querySelector(`.${startStr}-amount`).value
+
+      if (itemTitle !== '' && itemAmount !== '') {
+        this[startStr][itemTitle] = +itemAmount
       }
-    })
-    for (let key in this.income) {
+    }
+
+    const expensesItemsAll = document.querySelectorAll('.expenses-items'),
+      incomeItemsAll = document.querySelectorAll('.income-items')
+
+    incomeItemsAll.forEach(count)
+    expensesItemsAll.forEach(count)
+
+    for (const key in this.income) {
       this.incomeMonth += +this.income[key]
     }
   }
@@ -154,7 +141,7 @@ class AppData {
 
   getExpensesMonth() {
     for (const key in this.expenses) {
-      this.expensesMonth = +this.expenses[key]
+      this.expensesMonth += +this.expenses[key]
     }
   }
 
@@ -205,6 +192,9 @@ class AppData {
     expensesPlus.style.display = 'block'
     incomePlus.style.display = 'block'
 
+    const expensesItems = document.querySelectorAll('.expenses-items'),
+      incomeItems = document.querySelectorAll('.income-items')
+
     this.deleteBtnPlus(expensesItems)
     this.deleteBtnPlus(incomeItems)
 
@@ -235,8 +225,8 @@ class AppData {
 
   eventsListeners() {
     start.addEventListener('click', this.start.bind(this))
-    expensesPlus.addEventListener('click', this.addExpensesBlock.bind(this))
-    incomePlus.addEventListener('click', this.addIncomeBlock.bind(this))
+    expensesPlus.addEventListener('click', this.addExpIncBlock.bind(this, expensesItems, expensesPlus))
+    incomePlus.addEventListener('click', this.addExpIncBlock.bind(this, incomeItems, incomePlus))
     periodSelect.addEventListener('input', this.showPeriod)
     salaryAmount.addEventListener('input', this.validStart)
     btnCancel.addEventListener('click', this.reset.bind(this))
