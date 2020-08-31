@@ -232,7 +232,6 @@ class AppData {
   percentValid() {
     if (depositCheck.checked) {
       start.disabled = depositPercent.value === ''
-      console.log(+depositPercent.value.trim() > 0)
       if (depositPercent.value.trim() === '' || +depositPercent.value <= 0) {
         start.disabled = true
       }
