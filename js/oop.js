@@ -232,7 +232,7 @@ class AppData {
   percentValid() {
     if (depositCheck.checked) {
       start.disabled = depositPercent.value === ''
-      if (depositPercent.value.trim() === '' || +depositPercent.value <= 0) {
+      if (depositPercent.value.trim() === '' || +depositPercent.value <= 0 || +depositPercent.value >= 100) {
         start.disabled = true
       }
     }
